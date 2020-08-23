@@ -1,47 +1,47 @@
-var map;
-function initMap() {
-  var uluru = {lat: 40.44694706, lng: -79.95300293};
-  
-  var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 14,
-      center: uluru
-  });
-
-
-  var iconBase =
-      'icons/';
-
-  var icons = {
-    bicycling: {
-      icon: iconBase + 'cycling.png'
-    }
+(function(){
+  var firebaseConfig = {
+      apiKey: "AIzaSyCzSHHJ_u3vD2R2_CX3013GAl-8rYE58r0",
+      authDomain: "cityzen-280417.firebaseapp.com",
+      databaseURL: "https://cityzen-280417.firebaseio.com",
+      projectId: "cityzen-280417",
+      storageBucket: "cityzen-280417.appspot.com",
+      messagingSenderId: "618311008905",
+      appId: "1:618311008905:web:a77b2048f7ec8c25e4bc58",
+      measurementId: "G-7PWPK9YNFN"
   };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  // Generate a random Firebase location
+  var database = firebase.database().ref().push();
+  
+  // Create a new GeoFire instance at the random Firebase location
+  var geoFireInstance = new geofire.GeoFire(database);
 
-  var contentString = '<div id="content">'+
-'<div id="siteNotice">'+
-'</div>'+
-'<h1 id="firstHeading" class="firstHeading">Bicycling Suggestion</h1>'+
-'<img src="icons/bicycle.jpeg"></img>' + 
-'<div id="bodyContent">'+
-'<p><b>Suggestion</b>, A bike lane should be added at this location please. </p>'+
-'<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
-'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
-'</p>'+
-'</div>'+
-'</div>';
+  var showMap = function initMap(latitude, longitude){
+      var curLoc = {lat: latitude, lng: longitude};
+      var map = new google.maps.Map(
+      document.getElementById('map'), {zoom: 17, center: curLoc});
+  }
+  
+  /* Uses the HTML5 geolocation API to get the current user's location */
+  var getLocation = function() {
+      if (typeof navigator !== "undefined" && typeof navigator.geolocation !== "undefined") {
+      log("Asking user to get their location");
+      navigator.geolocation.getCurrentPosition(geolocationCallback);
+      } else {
+      log("Your browser does not support the HTML5 Geolocation API, so this demo will not work.")
+      }
+  };
+  
+  /* Callback method from the geolocation API which receives the current user's location */
+  var geolocationCallback = function(location) {
+      var latitude = location.coords.latitude;
+      var longitude = location.coords.longitude;
 
-  var infowindow = new google.maps.InfoWindow({
-      content: contentString
-  });
+      showMap(latitude, longitude);
+  }
+  
+  // Get the current user's location
+  getLocation();
+})();
 
-  var marker = new google.maps.Marker({
-      position: uluru,
-      draggable: true,
-      icon: icons['bicycling'].icon,
-      map: map,
-      title: 'Uluru (Ayers Rock)'
-  });
-  marker.addListener('click', function() {
-      infowindow.open(map, marker);
-  });
-}
